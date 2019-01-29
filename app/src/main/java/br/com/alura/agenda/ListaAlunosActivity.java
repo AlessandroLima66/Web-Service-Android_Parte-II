@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -32,32 +33,41 @@ import retrofit2.Response;
 public class ListaAlunosActivity extends AppCompatActivity {
 
     private ListView listaAlunos;
+    private SwipeRefreshLayout swipeListaAluno;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_alunos);
 
-        listaAlunos = (ListView) findViewById(R.id.lista_alunos);
-        listaAlunos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> lista, View item, int position, long id) {
-                Aluno aluno = (Aluno) listaAlunos.getItemAtPosition(position);
+//        listaAlunos = (ListView) findViewById(R.id.lista_alunos);
+//        listaAlunos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> lista, View item, int position, long id) {
+//                Aluno aluno = (Aluno) listaAlunos.getItemAtPosition(position);
+//
+//                Intent intentVaiProFormulario = new Intent(ListaAlunosActivity.this, FormularioActivity.class);
+//                intentVaiProFormulario.putExtra("aluno", aluno);
+//                startActivity(intentVaiProFormulario);
+//            }
+//        });
 
-                Intent intentVaiProFormulario = new Intent(ListaAlunosActivity.this, FormularioActivity.class);
-                intentVaiProFormulario.putExtra("aluno", aluno);
-                startActivity(intentVaiProFormulario);
-            }
-        });
-
-        Button novoAluno = (Button) findViewById(R.id.novo_aluno);
-        novoAluno.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intentVaiProFormulario = new Intent(ListaAlunosActivity.this, FormularioActivity.class);
-                startActivity(intentVaiProFormulario);
-            }
-        });
+//        swipeListaAluno = findViewById(R.id.swipe_lista_aluno);
+//        swipeListaAluno.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                buscaAlunos();
+//            }
+//        });
+//
+//        Button novoAluno = (Button) findViewById(R.id.novo_aluno);
+//        novoAluno.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intentVaiProFormulario = new Intent(ListaAlunosActivity.this, FormularioActivity.class);
+//                startActivity(intentVaiProFormulario);
+//            }
+//        });
 
         registerForContextMenu(listaAlunos);
 
@@ -97,13 +107,20 @@ public class ListaAlunosActivity extends AppCompatActivity {
                 dao.sincroniza(alunoSync.getAlunos());
                 dao.close();
                 carregaLista();
+
+                encerraRefreshingSwipe();
             }
 
             @Override
             public void onFailure(Call<AlunoSync> call, Throwable t) {
+                encerraRefreshingSwipe();
                 Log.e("onFailure chamado", t.getMessage());
             }
         });
+    }
+
+    private void encerraRefreshingSwipe() {
+        swipeListaAluno.setRefreshing(false);
     }
 
     @Override
