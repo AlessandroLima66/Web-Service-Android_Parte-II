@@ -39,14 +39,13 @@ public class ListaAlunosActivity extends AppCompatActivity {
 
     private ListView listaAlunos;
     private SwipeRefreshLayout swipeListaAluno;
-    private EventBus eventBus;
+    public EventBus eventBus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_alunos);
         eventBus = EventBus.getDefault();
-
 
         listaAlunos = (ListView) findViewById(R.id.lista_alunos);
         listaAlunos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -82,8 +81,9 @@ public class ListaAlunosActivity extends AppCompatActivity {
         buscaAlunos();
     }
 
+
     @Subscribe(threadMode = ThreadMode.MAIN)
-    private void atualizaListaAlunoEvent(AtualizaListaAlunoEvent event) {
+    public void atualizaListaAlunoEvent(AtualizaListaAlunoEvent event) {
         carregaLista();
     }
 
@@ -105,7 +105,7 @@ public class ListaAlunosActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        eventBus.register(this);
+        eventBus.register(ListaAlunosActivity.this);
         carregaLista();
     }
 

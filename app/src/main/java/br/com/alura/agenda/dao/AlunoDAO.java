@@ -95,7 +95,7 @@ public class AlunoDAO extends SQLiteOpenHelper {
     }
 
     private void insereIdSeNecessario(Aluno aluno) {
-        if(aluno.getId() ==null) {
+        if (aluno.getId() == null) {
             aluno.setId(geraUUID());
         }
     }
@@ -170,8 +170,12 @@ public class AlunoDAO extends SQLiteOpenHelper {
         for (Aluno aluno :
                 alunos) {
             if (existe(aluno)) {
-                altera(aluno);
-            } else {
+                if (aluno.estaDesativado()) {
+                    deleta(aluno);
+                } else {
+                    altera(aluno);
+                }
+            } else if (!aluno.estaDesativado()); {
                 insere(aluno);
             }
         }
